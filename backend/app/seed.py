@@ -1,7 +1,91 @@
 """示例数据：每个模块给几条不同状态的记录，方便起服务后立刻看到内容。"""
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
+
+
+def _weather_seed() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """气象观测示例：同一批次把观测与其联带预警一起备好，日期落在当天。"""
+    day = datetime.now().strftime("%Y-%m-%d")
+    default_targets = "塔台、机坪管制、运行指挥中心"
+
+    def alert(
+        alert_id: int, observation_id: int, observed: str, broadcast_at: str,
+        alert_type: str, level: str, live: str, threshold: str, content: str,
+    ) -> dict[str, Any]:
+        return {
+            "id": alert_id,
+            "观测记录": observation_id,
+            "观测时间": observed,
+            "预警类型": alert_type,
+            "预警等级": level,
+            "触发实况": live,
+            "预警阈值": threshold,
+            "预警内容": content,
+            "播报对象": default_targets,
+            "播报时刻": broadcast_at,
+            "status": "预警中",
+            "pending": False,
+            "abnormal": True,
+        }
+
+    observations = [
+        {
+            "id": 1,
+            "status": "正常",
+            "pending": False,
+            "abnormal": False,
+            "观测时间": f"{day} 07:30",
+            "能见度": 3200,
+            "风速": 4.2,
+            "风向": "西北风",
+            "跑道视程": 1800,
+        },
+        {
+            "id": 2,
+            "status": "预警中",
+            "pending": False,
+            "abnormal": True,
+            "观测时间": f"{day} 08:00",
+            "能见度": 800,
+            "风速": 6.5,
+            "风向": "270°",
+            "跑道视程": 500,
+        },
+        {
+            "id": 3,
+            "status": "预警中",
+            "pending": False,
+            "abnormal": True,
+            "观测时间": f"{day} 08:30",
+            "能见度": 450,
+            "风速": 16.8,
+            "风向": "西风",
+            "跑道视程": 280,
+        },
+    ]
+    alerts = [
+        alert(1, 2, f"{day} 08:00", f"{day} 08:00:40",
+              "能见度", "橙色", "800 米", "低于1000 米",
+              "能见度 800 米低于橙色预警线 1000 米，请注意低能见度运行"),
+        alert(2, 2, f"{day} 08:00", f"{day} 08:00:40",
+              "跑道视程", "橙色", "500 米", "低于550 米",
+              "跑道视程 500 米低于橙色预警线 550 米，请关注跑道视程变化"),
+        alert(3, 3, f"{day} 08:30", f"{day} 08:30:35",
+              "能见度", "红色", "450 米", "低于500 米",
+              "能见度 450 米低于红色预警线 500 米，低能见度运行风险高"),
+        alert(4, 3, f"{day} 08:30", f"{day} 08:30:35",
+              "跑道视程", "红色", "280 米", "低于300 米",
+              "跑道视程 280 米低于红色预警线 300 米，跑道起降标准受限"),
+        alert(5, 3, f"{day} 08:30", f"{day} 08:30:35",
+              "风速", "橙色", "16.8 米/秒", "不低于15 米/秒",
+              "风速 16.8 米/秒达到橙色预警线 15 米/秒，请注意防风"),
+    ]
+    return observations, alerts
+
+
+_WEATHER_ROWS, _WEATHER_ALERT_ROWS = _weather_seed()
 
 SEED_ROWS: dict[str, list[dict[str, Any]]] = {
     "flight": [{'id': 1,
@@ -651,5 +735,7 @@ SEED_ROWS: dict[str, list[dict[str, Any]]] = {
   '培训课时': '资质培训样例3',
   '考核成绩': '资质培训样例3',
   '培训日期': '2026-09-03',
-  '培训状态': '资质培训样例3'}]
+  '培训状态': '资质培训样例3'}],
+    "weather": _WEATHER_ROWS,
+    "weather_alert": _WEATHER_ALERT_ROWS,
 }
