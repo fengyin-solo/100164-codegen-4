@@ -244,3 +244,12 @@ class TrainingEntry(BaseModel):
     field_5: str | None = None  # 考核成绩
     field_6: str | None = None  # 培训日期
     field_7: str | None = None  # 培训状态
+
+class WeatherEntry(BaseModel):
+    """气象观测明细结构。"""
+
+    field_0: str | None = None  # 观测时间
+    field_1: float | None = None  # 能见度（米）
+    field_2: float | None = None  # 风速（米/秒）
+    field_3: str | None = None  # 风向
+    field_4: float | None = None  # 跑道视程（米）
